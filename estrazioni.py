@@ -86,7 +86,8 @@ for data in lista_date:
         if '_cf_' in nome_file:
             membro = 'CTL'
         else:
-            membro = f"{int(re.search(r'_pf_(\d+)', nome_file).group(1)):02d}"
+            numero_membro = int(re.search(r'_pf_(\d+)', nome_file).group(1))
+            membro = f"{numero_membro:02d}"
 
         print(f'  * membro {membro}')
         
