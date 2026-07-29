@@ -1,6 +1,8 @@
 
 import os
 
+import numpy as np
+
 def f_lista_percorsi_membri_EPS(CARTELLA_ARC_STORICO, CARTELLA_ARC_BACKUP, data):
 
     sub_cartella_modello = f"{CARTELLA_ARC_STORICO}/ECMWF/{data.strftime('%Y/%m/%d')}"
@@ -15,3 +17,14 @@ def f_lista_percorsi_membri_EPS(CARTELLA_ARC_STORICO, CARTELLA_ARC_BACKUP, data)
         lista_percorsi.append(f'{sub_cartella_modello}/{m}')
 
     return lista_percorsi
+
+
+def f_calcola_rank(membri, oss):
+    """Rank normalizzato dell'osservazione tra i membri, con tie-breaking
+    casuale (Hamill 2001) per gestire osservazioni uguali a uno o piu' membri."""
+    membri_ord = np.sort(membri)
+    n = len(membri_ord)
+    rank_inf = np.searchsorted(membri_ord, oss, side='left')
+    rank_sup = np.searchsorted(membri_ord, oss, side='right')
+    rank = np.random.randint(rank_inf, rank_sup + 1) if rank_sup > rank_inf else rank_inf
+    return rank / n

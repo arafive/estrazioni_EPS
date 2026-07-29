@@ -113,14 +113,14 @@ for data in lista_date:
                 else:
                     df.columns = [f'{campo}_{membro}']
                     
-                if campo == 'tp':
-                    assert df.index[0] == data, "L'istante iniziale non coincide con l'analisi"
-                    
-                    df = df.reindex(pd.date_range(start=data, end=df.index.max(), freq='6h'))
-                    df = df * 1000 # m -> mm
-                    df = df.diff()
-                    df.iloc[0] = 0
-                    df = df.clip(lower=0)
+                ### !!! Rifai l'estrazione solo per tp, oppure calcola la cumulata dopo...
+                # if campo == 'tp':
+                #     assert df.index[0] == data, "L'istante iniziale non coincide con l'analisi"
+                #     df = df.reindex(pd.date_range(start=data, end=df.index.max(), freq='6h'))
+                #     df = df * 1000 # m -> mm
+                #     df = df.diff()
+                #     df.iloc[0] = 0
+                #     df = df.clip(lower=0)
                 
                 dict_df.setdefault((campo, stazione), []).append(df)
     
