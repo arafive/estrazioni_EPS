@@ -28,3 +28,12 @@ def f_calcola_rank(membri, oss):
     rank_sup = np.searchsorted(membri_ord, oss, side='right')
     rank = np.random.randint(rank_inf, rank_sup + 1) if rank_sup > rank_inf else rank_inf
     return rank / n
+
+
+def f_calcola_crps(membri, oss):
+    """CRPS empirico (stimatore NRG) per un singolo caso ensemble."""
+    n = len(membri)
+    termine1 = np.mean(np.abs(membri - oss))
+    diff = np.abs(membri[:, None] - membri[None, :])
+    termine2 = diff.sum() / (2 * n * n)
+    return termine1 - termine2
