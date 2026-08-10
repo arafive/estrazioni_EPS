@@ -64,9 +64,14 @@ for data in lista_date:
         for campo in lista_campi
         for stazione in df_coordinate.index
     ]
-    if all(os.path.exists(p) for p in percorsi_output_attesi):
+    percorsi_mancanti = [p for p in percorsi_output_attesi if not os.path.exists(p)]
+    if not percorsi_mancanti:
         print('*** Tutti i file di output già presenti per questa data, continuo ***')
         continue
+    else:
+        campi_mancanti = sorted({p.split('/')[-3] for p in percorsi_mancanti})
+        print(f"*** Mancano {len(percorsi_mancanti)}/{len(percorsi_output_attesi)} file. "
+              f"Campi coinvolti: {campi_mancanti}. Esempio: {percorsi_mancanti[0]}")
     
     lista_percorsi = f_lista_percorsi_membri_EPS(CARTELLA_ARC_STORICO, CARTELLA_ARC_STORICO, data)
     
@@ -86,8 +91,7 @@ for data in lista_date:
         if '_cf_' in nome_file:
             membro = 'CTL'
         else:
-            numero_membro = int(re.search(r'_pf_(\d+)', nome_file).group(1))
-            membro = f"{numero_membro:02d}"
+            membro = f"{int(re.search(r'_pf_(\d+)', nome_file).group(1)):02d}"
 
         print(f'  * membro {membro}')
         
@@ -131,3 +135,4 @@ for data in lista_date:
         df_finale.to_csv(f"{cartella_output}/{campo}/{stazione}/{data.strftime('%Y-%m-%d')}.csv", index=True, header=True, mode='w', na_rep=np.nan)
 
 print('\n\nDone.')
+
