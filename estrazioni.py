@@ -24,8 +24,11 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 # TODO fallo in parallelo
 
 sys.path.insert(0, os.path.expanduser('~/.config'))
-from config_percorsi_Daniele import CARTELLA_REPO_ROOT
 from config_percorsi_Daniele import CARTELLA_ARC_STORICO
+
+# radice = cartella che contiene calibrazione_EPS ed estrazioni_EPS: l'HD Daniele2TB (sviluppo) o ~/Scrivania (operativo).
+# Ricavata dalla posizione dello script, cosi' lo stesso file funziona nelle due copie.
+CARTELLA_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # from config_percorsi_Daniele import CARTELLA_ARC_BACKUP
 # from config_percorsi_Daniele import CARTELLA_STORAGE
 
@@ -42,7 +45,7 @@ config.read('./config.ini')
 
 df_coordinate = pd.read_csv('coordinate/df_coordinate.csv', index_col=0)
 lista_campi = ast.literal_eval(config.get('COMMON', 'lista_campi'))
-cartella_output = f"{CARTELLA_REPO_ROOT}/{config.get('COMMON', 'cartella_output')}"
+cartella_output = os.path.join(cartella_lavoro, config.get('COMMON', 'cartella_output'))  # estrazioni_EPS/output
 
 print(cartella_output)
 
@@ -51,8 +54,8 @@ if len(sys.argv) > 1:
     lista_date = [pd.Timestamp(data_arg)]
     print(lista_date)
 else:
-    # lista_date = [pd.Timestamp('2024-01-01')]
-    lista_date = pd.date_range('2025-01-01', '2026-07-28', freq='1d')
+    # senza argomenti: la corsa di oggi (uso operativo). Per un intervallo: lista_date = pd.date_range('2025-01-01', '2026-07-28', freq='1d')
+    lista_date = [pd.Timestamp.today().normalize()]
     
 # %%
 
@@ -91,7 +94,8 @@ for data in lista_date:
         if '_cf_' in nome_file:
             membro = 'CTL'
         else:
-            membro = f"{int(re.search(r'_pf_(\d+)', nome_file).group(1)):02d}"
+            numero = int(re.search(r'_pf_(\d+)', nome_file).group(1))  # fuori dalla f-string: Python < 3.12
+            membro = f"{numero:02d}"
 
         print(f'  * membro {membro}')
         
